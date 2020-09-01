@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
+import 'package:shop_app/controllers/authController.dart';
+import 'package:shop_app/screens/login_success/login_success_screen.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
 import 'package:shop_app/size_config.dart';
 
 // This is the best practice
 import '../components/splash_content.dart';
 import '../../../components/default_button.dart';
+import 'package:get/get.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -13,6 +16,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  AuthController auth = Get.put(AuthController());
   int currentPage = 0;
   List<Map<String, String>> splashData = [
     {
@@ -29,8 +33,15 @@ class _BodyState extends State<Body> {
       "image": "assets/images/splash_3.png"
     },
   ];
+  bool result = false;
+
+  void check() async {
+    result = await auth.tryAutoLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
+    check();
     return SafeArea(
       child: SizedBox(
         width: double.infinity,
@@ -70,7 +81,11 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Continue",
                       press: () {
-                        Navigator.pushNamed(context, SignInScreen.routeName);
+                        result
+                            ? Navigator.pushNamed(
+                                context, LoginSuccessScreen.routeName)
+                            : Navigator.pushNamed(
+                                context, SignInScreen.routeName);
                       },
                     ),
                     Spacer(),

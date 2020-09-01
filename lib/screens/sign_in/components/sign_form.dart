@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
+import 'package:shop_app/controllers/authController.dart';
 import 'package:shop_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
+import 'package:get/get.dart';
 
 class SignForm extends StatefulWidget {
   @override
@@ -15,6 +18,8 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
+  final AuthController auth = Get.put(AuthController());
+
   String email;
   String password;
   bool remember = false;
@@ -69,15 +74,31 @@ class _SignFormState extends State<SignForm> {
           ),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
-          DefaultButton(
-            text: "Continue",
-            press: () {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                // if all are valid then go to success screen
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-              }
-            },
+          GetBuilder<AuthController>(
+            builder: (controller) => controller.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : DefaultButton(
+                    text: "Continue",
+                    press: () async {
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        try {
+                          await auth.login(email: email, password: password);
+                          Navigator.pushNamed(
+                              context, LoginSuccessScreen.routeName);
+                        } catch (e) {
+                          print(e.toString());
+                          Get.snackbar(
+                            'Failed',
+                            e.toString(),
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        }
+                      }
+                    },
+                  ),
           ),
         ],
       ),
@@ -100,7 +121,7 @@ class _SignFormState extends State<SignForm> {
         if (value.isEmpty) {
           addError(error: kPassNullError);
           return "";
-        } else if (value.length < 8) {
+        } else if (value.length < 3) {
           addError(error: kShortPassError);
           return "";
         }

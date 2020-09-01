@@ -1,56 +1,24 @@
-class User {
-  String tokenType;
-  String workType;
-  String surname;
-  String firstName;
-  String lastName;
-  String username;
-  int userId;
-  int businessId;
+class UserModel {
   String accessToken;
+  String tokenType;
   int expiresIn;
-  String refreshToken;
+  String user;
 
-  User(
-      {this.tokenType,
-      this.workType,
-      this.surname,
-      this.firstName,
-      this.lastName,
-      this.username,
-      this.userId,
-      this.businessId,
-      this.accessToken,
-      this.expiresIn,
-      this.refreshToken});
+  UserModel({this.accessToken, this.tokenType, this.expiresIn, this.user});
 
-  User.fromJson(Map<String, dynamic> json) {
-    tokenType = json['token_type'];
-    workType = json['work_type'];
-    surname = json['surname'];
-    firstName = json['first_name'];
-    lastName = json['last_name'];
-    username = json['username'];
-    userId = json['user_id'];
-    businessId = json['business_id'];
+  UserModel.fromJson(Map<String, dynamic> json) {
     accessToken = json['access_token'];
+    tokenType = json['token_type'];
     expiresIn = json['expires_in'];
-    refreshToken = json['refresh_token'];
+    user = json['user'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['token_type'] = this.tokenType;
-    data['work_type'] = this.workType;
-    data['surname'] = this.surname;
-    data['first_name'] = this.firstName;
-    data['last_name'] = this.lastName;
-    data['username'] = this.username;
-    data['user_id'] = this.userId;
-    data['business_id'] = this.businessId;
     data['access_token'] = this.accessToken;
+    data['token_type'] = this.tokenType;
     data['expires_in'] = this.expiresIn;
-    data['refresh_token'] = this.refreshToken;
+    data['user'] = this.user;
     return data;
   }
 }
